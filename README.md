@@ -16,7 +16,7 @@
 Ver `plan.md`. Resumen: rachas máximas de muestras con x < p; califican si longitud >= tipo+2;
 score suma esas longitudes; estado 1 si hay alguna. Validación total antes de imprimir.
 
-## Compilación y ejecución
+## Compilación y ejecución,
 ```
 gcc -std=c11 -Wall -Wextra -Wpedantic main.c -o reto
 
