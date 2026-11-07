@@ -65,11 +65,51 @@ int calcular(const int v[], int m, int tipo, int p, int *estado)
     return score;
 }
 
+int total_rec(const Registro r[], int n)
+{
+    if (n == 0) return 0;
+    return r[n - 1].score + total_rec(r, n - 1);
+}
+
+static int va_antes(const Registro *a, const Registro *b, int por_id)
+{
+    if (por_id) return a->id < b->id;
+    if (a->score != b->score) return a->score > b->score;
+    return a->id < b->id;
+}
+
+void ordenar(Registro r[], int n, int por_id)
+{
+    int i, j;
+    Registro clave;
+    for (i = 1; i < n; i++) {
+        clave = r[i];
+        j = i - 1;
+        while (j >= 0 && va_antes(&clave, &r[j], por_id)) {
+            r[j + 1] = r[j];
+            j--;
+        }
+        r[j + 1] = clave;
+    }
+}
+
+int buscar(const Registro r[], int n, int q)
+{
+    int bajo = 0, alto = n - 1, medio;
+    while (bajo <= alto) {
+        medio = bajo + (alto - bajo) / 2;
+        if (r[medio].id == q) return medio;
+        if (r[medio].id < q) bajo = medio + 1;
+        else alto = medio - 1;
+    }
+    return -1;
+}
+
 int main(void)
 {
     int muestras[MAX_UNIDADES][MAX_MUESTRAS];
-    Registro regs[MAX_UNIDADES];
-    int n, m, q, i;
+    Registro regs[MAX_UNIDADES], orden[MAX_UNIDADES], por_id[MAX_UNIDADES];
+    int n, m, q, i, pos;
 
     if (!leer_entrada(muestras, regs, &n, &m, &q)) {
         printf("ERROR\n");
@@ -82,5 +122,17 @@ int main(void)
 
     for (i = 0; i < n; i++)
         printf("%d %d %d\n", regs[i].id, regs[i].score, regs[i].estado);
+    printf("TOTAL %d\n", total_rec(regs, n));
+
+    for (i = 0; i < n; i++) { orden[i] = regs[i]; por_id[i] = regs[i]; }
+    ordenar(orden, n, 0);
+    ordenar(por_id, n, 1);
+
+    printf("ORDER");
+    for (i = 0; i < n; i++) printf(" %d", orden[i].id);
+    printf("\n");
+
+    pos = buscar(por_id, n, q);
+    printf("FIND %d %d\n", q, pos >= 0 ? por_id[pos].score : -1);
     return 0;
 }
